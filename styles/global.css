@@ -49,14 +49,14 @@ img {
 input:-webkit-autofill {
   transition: background-color 5000000s ease-in-out 0s;
 }
-
-input {
-  display: inline-block;
-  outline: none;
-  border: none;
-  font-size: 1.5rem;
-  width: 100%;
-  padding: 5px 10px;
+.input {
+  font-size: 21px;
+  width: 60%;
+  padding: 1rem;
+}
+.align-center {
+  display: flex;
+  align-self: center;
 }
 fieldset {
   border: none;
@@ -185,8 +185,17 @@ button.btn-logo {
 
 .card footer {
   display: flex;
+  flex-direction: column;
 }
-
+.card footer .img-flex {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.card footer .img-flex-img {
+  object-fit: contain;
+  margin-top: 1rem;
+}
 .card-img-center {
   width: 25% !important;
   display: block;
@@ -194,7 +203,6 @@ button.btn-logo {
   border-radius: 50%;
   max-width: 200px;
 }
-
 .card-info {
   color: white;
   background: var(--color-blue);
@@ -237,6 +245,9 @@ input[type="file"] {
 
 .push-left {
   margin-left: auto;
+  cursor: pointer;
+  float: right;
+  font-weight: bold;
 }
 
 .text-sm {

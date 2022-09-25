@@ -18,7 +18,7 @@ export default function Home({ posts }) {
   async function getMorePosts() {
     setloading(true);
     let newPOSTS = [];
-    const last = stateposts[stateposts.length - 1].createdAt;
+    const last = stateposts[stateposts.length - 1]?.createdAt;
     const ref = collectionGroup(fsDB, "posts");
     const q = query(
       ref,
