@@ -43,7 +43,6 @@ export default function Home({ posts }) {
         <Posts posts={stateposts} />
         {!loading && <button onClick={getMorePosts}>Load more</button>}
         <Loader show={loading} />
-        
       </main>
     </>
   );

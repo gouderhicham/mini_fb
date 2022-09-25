@@ -4,8 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../lib/ContextNext";
 import useDebounce from "@clave/use-debounce";
 import Link from "next/link";
-import { setDoc, doc } from "firebase/firestore";
-import { checkusername } from "../lib/hooks";
+import { setDoc, doc, getDoc } from "firebase/firestore";
 const Enter = () => {
   const { user, profileuser, setsubmitclicked } = useContext(AppContext);
   useEffect(() => {
@@ -118,4 +117,14 @@ function SignInButton() {
       <button>Sign in Anonymously</button>
     </>
   );
+}
+async function checkusername(username, setvalid) {
+  const docRef = doc(fsDB, "usernames", username);
+  const docSnap = await getDoc(docRef);
+  let NEWdata = docSnap.exists();
+  if (username.length < 3) {
+    setvalid(false);
+  } else if (username.length >= 3) {
+    setvalid(!NEWdata);
+  }
 }

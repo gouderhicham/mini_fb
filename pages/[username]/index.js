@@ -4,7 +4,6 @@ import {
   getDoc,
   getDocs,
   limit,
-  orderBy,
   query,
   where,
 } from "firebase/firestore";
@@ -13,8 +12,9 @@ import { useRouter } from "next/router";
 import Posts from "../../components/Posts";
 import UserProfile from "../../components/UserProfile";
 import { fsDB } from "../../lib/firebase";
-const UsernamePage = ({ userData, posts, id }) => {
+const UsernamePage = ({ userData, posts }) => {
   const route = useRouter();
+  console.log(posts);
   return (
     <>
       <Head>
@@ -24,8 +24,9 @@ const UsernamePage = ({ userData, posts, id }) => {
         </title>
       </Head>
       <main>
-        <UserProfile id={id} user={userData} />
+        <UserProfile user={userData} />
         <Posts posts={posts} />
+      
       </main>
     </>
   );
@@ -44,12 +45,7 @@ export async function getServerSideProps(context) {
     //:BREAK
     const ref = collection(fsDB, "users", userData, "posts");
     let postsDATA = [];
-    const q = query(
-      ref,
-      limit(5),
-      where("published", "==", true),
-      orderBy("createdAt", "desc")
-    );
+    const q = query(ref, limit(5), where("published", "==", true));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
       postsDATA.push(doc.data());
@@ -58,7 +54,6 @@ export async function getServerSideProps(context) {
     return {
       props: {
         userData: data,
-        id: userData,
         posts: postsDATA,
       },
     };

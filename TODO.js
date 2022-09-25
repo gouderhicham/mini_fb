@@ -27,4 +27,4 @@
 //                       }
 //TODO: add the search for people function
 //TODO: add conversation functionnality between users
-//TODO: NOTE: add post page => after posting go to user page edit on the same shit. 
+// TODO: NOTE: add post page => after posting go to user page edit on the same shit
