@@ -1,10 +1,11 @@
 import Image from "next/image";
-const UserProfile = ({ user }) => {
+const UserProfile = ({ user, admin }) => {
   return (
     <>
       {user && (
         <div className="box-center">
-          <div style={{ width:"100%" }}>
+          {admin && <p className="push-left"> ✎ Edit </p>}
+          <div style={{ width: "100%" }}>
             <Image
               width={300}
               height={300}

@@ -4,17 +4,28 @@ import {
   getDoc,
   getDocs,
   limit,
+  orderBy,
   query,
   where,
 } from "firebase/firestore";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { useContext, useEffect, useState } from "react";
 import Posts from "../../components/Posts";
 import UserProfile from "../../components/UserProfile";
+import { AppContext } from "../../lib/ContextNext";
 import { fsDB } from "../../lib/firebase";
-const UsernamePage = ({ userData, posts }) => {
+const UsernamePage = ({ userData, posts, id }) => {
   const route = useRouter();
-  console.log(posts);
+  const [isadmin, setisadmin] = useState(false);
+  const { user } = useContext(AppContext);
+  useEffect(() => {
+    if (user?.uid === id) {
+      setisadmin(true);
+    } else {
+      setisadmin(false);
+    }
+  }, [user , id]);
   return (
     <>
       <Head>
@@ -24,9 +35,8 @@ const UsernamePage = ({ userData, posts }) => {
         </title>
       </Head>
       <main>
-        <UserProfile user={userData} />
+        <UserProfile user={userData} admin={isadmin} />
         <Posts posts={posts} />
-      
       </main>
     </>
   );
@@ -45,16 +55,21 @@ export async function getServerSideProps(context) {
     //:BREAK
     const ref = collection(fsDB, "users", userData, "posts");
     let postsDATA = [];
-    const q = query(ref, limit(5), where("published", "==", true));
+    const q = query(
+      ref,
+      limit(5),
+      where("published", "==", true),
+      orderBy("createdAt", "desc")
+    );
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
       postsDATA.push(doc.data());
     });
-
     return {
       props: {
         userData: data,
         posts: postsDATA,
+        id: userData,
       },
     };
   } else {

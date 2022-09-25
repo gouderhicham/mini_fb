@@ -68,6 +68,7 @@ function PostPage() {
               ...old,
               title: e.target.value,
               slug: e.target.value
+                .replace(/^\s+|\s+$/gm, "")
                 .replace(/[^\w\s]/gi, "")
                 .replace(/([a-z])([A-Z])/g, "$1-$2")
                 .replace(/[\s_]+/g, "-")
