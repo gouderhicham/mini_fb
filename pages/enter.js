@@ -20,10 +20,10 @@ const Enter = () => {
             username={profileuser?.username}
           />
         ) : (
-          <SignOutButton user={user} username={profileuser?.username} />
+          <SignOutButton />
         )
       ) : (
-        <SignInButton user={user} username={profileuser?.username} />
+        <SignInButton />
       )}
     </main>
   );

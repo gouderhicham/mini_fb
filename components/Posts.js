@@ -1,7 +1,9 @@
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import Link from "next/link";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { AppContext } from "../lib/ContextNext";
-
+import { fsDB } from "../lib/firebase";
+//TODO: add the profile pic next to the username in each post :DONE
 const Posts = ({ posts }) => {
   const { user } = useContext(AppContext);
   return (
@@ -14,11 +16,25 @@ const Posts = ({ posts }) => {
 };
 export default Posts;
 function PostItem({ post, adminId }) {
+  async function updatePosts() {
+    let mydoc = doc(fsDB, "users", post.uid);
+    let data = await getDoc(mydoc);
+    if (data.exists()) {
+      await updateDoc(doc(fsDB, "users", post.uid, "posts", post.slug), {
+        username: data.data().username,
+        Proimg: data.data().photoURL,
+      });
+    }
+  }
+  useEffect(() => {
+    updatePosts();
+  }, []);
   return (
     <div className="card">
       <Link href={`/${post.username}`}>
-        <a>
-          <strong>By @{post.username}</strong>
+        <a style={{ display: "flex", alignItems: "center" }}>
+          <img style={{ width: 30, borderRadius: "50%" }} src={post.Proimg} />
+          <strong> @{post.username}</strong>
         </a>
       </Link>
       {adminId === post?.uid && <p className="push-left"> ✎ Edit </p>}
@@ -26,7 +42,7 @@ function PostItem({ post, adminId }) {
         <a>{post.title}</a>
       </h2>
       <footer>
-        <span>120 words. 3 min to read</span>
+        <span>Created : {formDate(new Date(post.createdAt))}</span>
         {post.img && (
           <img
             height={350}
@@ -42,4 +58,15 @@ function PostItem({ post, adminId }) {
       </footer>
     </div>
   );
+}
+function formDate(date) {
+  let time = "";
+  if (date.getHours() > 12) {
+    time = "PM";
+  } else {
+    time = "AM";
+  }
+  return `${date.getDate()}/${
+    date.getMonth() + 1
+  }/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()} ${time}`;
 }

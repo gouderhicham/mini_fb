@@ -51,6 +51,9 @@ function PostPage() {
     });
     route.push(profileuser.username);
   }
+  if (!user) {
+    return <h1>you must be logged in</h1>;
+  }
   return (
     <main style={{}}>
       <form onSubmit={handleSubmit} className="form">

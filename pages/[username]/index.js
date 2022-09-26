@@ -3,6 +3,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  updateDoc,
   limit,
   orderBy,
   query,
@@ -25,7 +26,7 @@ const UsernamePage = ({ userData, posts, id }) => {
     } else {
       setisadmin(false);
     }
-  }, [user , id]);
+  }, [user, id]);
   return (
     <>
       <Head>
@@ -35,7 +36,7 @@ const UsernamePage = ({ userData, posts, id }) => {
         </title>
       </Head>
       <main>
-        <UserProfile user={userData} admin={isadmin} />
+        <UserProfile PAGEuser={userData} admin={isadmin} />
         <Posts posts={posts} />
       </main>
     </>
@@ -62,7 +63,7 @@ export async function getServerSideProps(context) {
       orderBy("createdAt", "desc")
     );
     const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
+    querySnapshot.forEach(async (doc) => {
       postsDATA.push(doc.data());
     });
     return {
