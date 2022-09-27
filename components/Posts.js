@@ -1,6 +1,7 @@
 import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../lib/ContextNext";
 import { fsDB, storage } from "../lib/firebase";
@@ -17,6 +18,7 @@ const Posts = ({ posts }) => {
 };
 export default Posts;
 function PostItem({ post, adminId }) {
+  const route = useRouter();
   const [editmode, seteditmode] = useState(false);
   const [imgUrl, setImgUrl] = useState(null);
   const [input, setinput] = useState("");
@@ -39,6 +41,8 @@ function PostItem({ post, adminId }) {
     );
   };
   async function updatePosts() {
+    //NOTE: this if is to reduce number of read request to firebase database 
+    if (route.query.username === null) return;
     let mydoc = doc(fsDB, "users", post.uid);
     let data = await getDoc(mydoc);
     if (data.exists()) {
