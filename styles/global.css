@@ -143,14 +143,23 @@ button.btn-blue {
   color: white;
 }
 
-button.btn-red {
+.btn-red {
   background-color: var(--color-red);
   color: white;
+  padding: 0.5rem 0.7rem;
+  border-radius: 0.5rem;
+  margin-right: 0.5rem;
 }
 
 button.btn-green {
   background-color: var(--color-green);
   color: white;
+}
+.btn-gray {
+  background-color: rgb(202, 202, 202);
+  color: black;
+  padding: 0.5rem 0.7rem;
+  border-radius: 0.5rem;
 }
 
 button.btn-google {

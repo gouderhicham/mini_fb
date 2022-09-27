@@ -10,6 +10,7 @@ const UserProfile = ({ PAGEuser, admin }) => {
   const [imgUrl, setImgUrl] = useState(null);
   const [progresspercent, setProgresspercent] = useState(0);
   const { user } = useContext(AppContext);
+  //NOTE: repeated
   const onSelectFile = (e) => {
     const file = e.target?.files[0];
     if (!file) return;
@@ -33,6 +34,7 @@ const UserProfile = ({ PAGEuser, admin }) => {
       }
     );
   };
+  //NOTE: repeated
   async function handleEditSubmit() {
     seteditmode(false);
     await deleteDoc(doc(fsDB, "usernames", PAGEuser.username));
