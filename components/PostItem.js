@@ -18,7 +18,7 @@ export default function PostItem({ post, adminId, profileuser }) {
   const [imgUrl, setImgUrl] = useState(null);
   const [input, setinput] = useState("");
   const [liked, setliked] = useState(false);
-  const [likesnum, setlikesnum] = useState(post.heartCound.length);
+  const [likesnum, setlikesnum] = useState(post.heartCound.length || 0);
   const onSelectFile = (e) => {
     const file = e.target?.files[0];
     if (!file) return;
@@ -38,11 +38,11 @@ export default function PostItem({ post, adminId, profileuser }) {
     );
   };
   async function updatePosts() {
-    // NOTE: check if username if available if not add you must logged in popup 
+    // NOTE: check if username if available if not add you must logged in popup
     const docSnap = await getDoc(
       doc(fsDB, "users", post.uid, "posts", post.slug)
     );
-    if (docSnap.exists()) {
+    if (docSnap.data().heartCound) {
       if (docSnap.data().heartCound.includes(profileuser?.username)) {
         setliked(true);
       }
@@ -85,7 +85,12 @@ export default function PostItem({ post, adminId, profileuser }) {
           }}
         >
           <img
-            style={{ width: 30, borderRadius: "50%", marginRight: "0.3rem" }}
+            style={{
+              width: 50,
+              height: 50,
+              borderRadius: "50%",
+              marginRight: "0.3rem",
+            }}
             src={post.Proimg}
           />
           <strong> {post.username}</strong>
@@ -152,27 +157,38 @@ export default function PostItem({ post, adminId, profileuser }) {
       </footer>
       <span
         onClick={async () => {
-          setliked((old) => !old);
-          setlikesnum((old) => {
+          if (profileuser) {
+            setliked((old) => !old);
+            setlikesnum((old) => {
+              if (!liked) {
+                return ++old;
+              } else {
+                return --old;
+              }
+            });
             if (!liked) {
-              return ++old;
+              await updateDoc(
+                doc(fsDB, "users", post.uid, "posts", post.slug),
+                {
+                  heartCound: arrayUnion(profileuser.username),
+                }
+              );
             } else {
-              return --old;
+              await updateDoc(
+                doc(fsDB, "users", post.uid, "posts", post.slug),
+                {
+                  heartCound: arrayRemove(profileuser.username),
+                }
+              );
             }
-          });
-          if (!liked) {
-            await updateDoc(doc(fsDB, "users", post.uid, "posts", post.slug), {
-              heartCound: arrayUnion(profileuser.username),
-            });
           } else {
-            await updateDoc(doc(fsDB, "users", post.uid, "posts", post.slug), {
-              heartCound: arrayRemove(profileuser.username),
-            });
+            prompt("you must be logged in");
           }
         }}
         className="push-left"
       >
-        {liked ? "❤️" : `❤`} {likesnum}
+        <img src={`${liked ? "/heartRED.png" : "/heartBLACK.png"}`} />
+        {likesnum}
       </span>
       {editmode && (
         <button onClick={handleSub} className="btn-green ">

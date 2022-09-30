@@ -25,7 +25,7 @@ export default function Home({ posts }) {
       orderBy("createdAt", "desc"),
       startAfter(last),
       where("published", "==", true),
-      limit(1)
+      limit(2)
     );
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
@@ -55,7 +55,7 @@ export async function getServerSideProps() {
     ref,
     orderBy("createdAt", "desc"),
     where("published", "==", true),
-    limit(1)
+    limit(2)
   );
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {

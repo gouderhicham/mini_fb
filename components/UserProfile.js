@@ -64,6 +64,7 @@ const UserProfile = ({ PAGEuser, admin }) => {
               height={300}
               src={imgUrl ? imgUrl : PAGEuser.photoURL}
               className="card-img-center"
+              objectFit="cover"
             />
           </div>
           {editmote && (

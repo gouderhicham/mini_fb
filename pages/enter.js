@@ -104,7 +104,7 @@ export function SignOutButton() {
 function SignInButton() {
   const signInWithGoogle = async () => {
     try {
-      await signInWithPopup(auth, googleAuthProvider);
+      signInWithPopup(auth, googleAuthProvider);
     } catch (error) {
       console.error(error);
     }
