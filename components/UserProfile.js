@@ -35,14 +35,28 @@ const UserProfile = ({ PAGEuser, admin }) => {
   };
   async function handleEditSubmit() {
     seteditmode(false);
-    await deleteDoc(doc(fsDB, "usernames", PAGEuser.username));
-    await updateDoc(doc(fsDB, "users", user.uid), {
-      username: input,
-      photoURL: imgUrl,
-    });
-    await setDoc(doc(fsDB, "usernames", input), {
-      uid: user.uid,
-    });
+    if (input === "" && imgUrl !== null) {
+      await updateDoc(doc(fsDB, "users", user.uid), {
+        photoURL: imgUrl,
+      });
+    } else if (imgUrl === null && input !== "") {
+      await deleteDoc(doc(fsDB, "usernames", PAGEuser.username));
+      await updateDoc(doc(fsDB, "users", user.uid), {
+        username: input,
+      });
+      await setDoc(doc(fsDB, "usernames", input), {
+        uid: user.uid,
+      });
+    } else {
+      await deleteDoc(doc(fsDB, "usernames", PAGEuser.username));
+      await updateDoc(doc(fsDB, "users", user.uid), {
+        username: input,
+        photoURL: imgUrl,
+      });
+      await setDoc(doc(fsDB, "usernames", input), {
+        uid: user.uid,
+      });
+    }
     window.location.replace(input);
   }
   return (

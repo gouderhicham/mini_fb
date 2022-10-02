@@ -7,6 +7,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -15,10 +16,12 @@ import { formDate } from "../lib/hooks";
 export default function PostItem({ post, adminId, profileuser }) {
   const route = useRouter();
   const [editmode, seteditmode] = useState(false);
+  const [expanded, setexpanded] = useState(false);
   const [imgUrl, setImgUrl] = useState(null);
-  const [input, setinput] = useState("");
+  const [input, setinput] = useState(post?.content);
   const [liked, setliked] = useState(false);
   const [likesnum, setlikesnum] = useState(post.heartCound.length || 0);
+  const [showmore, setshowmore] = useState(false);
   const onSelectFile = (e) => {
     const file = e.target?.files[0];
     if (!file) return;
@@ -42,12 +45,12 @@ export default function PostItem({ post, adminId, profileuser }) {
     const docSnap = await getDoc(
       doc(fsDB, "users", post.uid, "posts", post.slug)
     );
-    if (docSnap.data().heartCound) {
-      if (docSnap.data().heartCound.includes(profileuser?.username)) {
+    if (docSnap.data()?.heartCound) {
+      if (docSnap.data().heartCound.includes(adminId)) {
         setliked(true);
       }
     } else {
-      console.log("No such document!");
+      console.log("No such document! (document not liked ?? reomve later)");
     }
     //NOTE: this if statement is used to reduce the number of read request to firebase database
     if (route.query.username === null) return;
@@ -64,11 +67,28 @@ export default function PostItem({ post, adminId, profileuser }) {
     let mydoc = doc(fsDB, "users", post.uid);
     let data = await getDoc(mydoc);
     if (data.exists()) {
-      await updateDoc(doc(fsDB, "users", post.uid, "posts", post.slug), {
-        title: input,
-        img: imgUrl,
-      });
+      if (imgUrl === null && input !== "") {
+        await updateDoc(doc(fsDB, "users", post.uid, "posts", post.slug), {
+          content: input,
+        });
+      } else if (input === "" && imgUrl !== null) {
+        await updateDoc(doc(fsDB, "users", post.uid, "posts", post.slug), {
+          img: imgUrl,
+        });
+      } else {
+        await updateDoc(doc(fsDB, "users", post.uid, "posts", post.slug), {
+          content: input,
+          img: imgUrl,
+        });
+      }
       window.location.reload();
+    }
+  }
+  function returnShowNumber() {
+    if (post.content.length > 250) {
+      return 200;
+    } else {
+      post.content.length;
     }
   }
   useEffect(() => {
@@ -76,57 +96,95 @@ export default function PostItem({ post, adminId, profileuser }) {
   }, []);
   return (
     <div className="card">
-      <Link href={`/${post.username}`}>
-        <a
-          style={{
-            width: "fit-content",
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <img
-            style={{
-              width: 50,
-              height: 50,
-              borderRadius: "50%",
-              marginRight: "0.3rem",
-            }}
-            src={post.Proimg}
-          />
-          <strong> {post.username}</strong>
-        </a>
-      </Link>
-      {adminId === post?.uid && (
-        <>
-          <p
-            onClick={() => seteditmode((old) => !old)}
-            className="push-left btn-gray"
-          >
-            ✎ Edit
-          </p>
-          <p
-            onClick={async () => {
-              await deleteDoc(doc(fsDB, "users", post.uid, "posts", post.slug));
-              window.location.reload();
-            }}
-            className="push-left btn-red"
-          >
-            🗑️ Delete
-          </p>
-        </>
-      )}
-      <h2>
-        {!editmode && <a>{post.title}</a>}
+      <div className="expand">
+        {/* NOTE: profile img and username and date */}
+        <Link href={`/${post.username}`}>
+          <a className="gap center">
+            <Image
+              className="profile-pic"
+              width={50}
+              height={50}
+              src={post.Proimg}
+            />
+            <div className="flex-start">
+              <strong> {post.username}</strong>
+              <span>{formDate(new Date(post.createdAt))}</span>
+            </div>
+          </a>
+        </Link>
+        {/* NOTE: edit button  */}
+        {adminId === post?.uid && (
+          <div className="expand-btns">
+            <strong
+              onClick={() => {
+                setexpanded((old) => !old);
+              }}
+              className="edit-button"
+            >
+              ⋮
+            </strong>
+            {expanded && (
+              <div className="thh">
+                <div
+                  onClick={() => seteditmode((old) => !old)}
+                  className="cursor"
+                >
+                  ✎
+                </div>
+                <div
+                  onClick={async () => {
+                    await deleteDoc(
+                      doc(fsDB, "users", post.uid, "posts", post.slug)
+                    );
+                    window.location.reload();
+                  }}
+                  className="cursor"
+                >
+                  🗑️
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      {/* NOTE: post content */}
+      <>
+        <p style={{ opacity: 0, position: "absolute" }}>{post.content}</p>
+        {!editmode && (
+          <>
+            <p>
+              {showmore ? (
+                <>{post.content}</>
+              ) : (
+                <>
+                  {post.content.slice(0, returnShowNumber())}
+                  {showmore ? "" : "..."}
+                </>
+              )}
+              <>
+                {post.content.length > 250 && (
+                  <span
+                    className="backg"
+                    onClick={() => setshowmore((old) => !old)}
+                  >
+                    show {showmore ? "less" : "more"}
+                  </span>
+                )}
+              </>
+            </p>
+          </>
+        )}
         {editmode && (
           <>
-            <input
-              onChange={(e) => setinput(e.target.value)}
-              value={input}
-              placeholder="title..."
+            <textarea
+              className="textarea"
+              rows="10"
               type={"text"}
-              style={{ width: "50%" }}
+              autoFocus
+              value={input}
+              onChange={(e) => setinput(e.target.value)}
+              style={{ border: "none", outline: "none" }}
             />
-
             <label
               style={{
                 width: "fit-content",
@@ -140,56 +198,61 @@ export default function PostItem({ post, adminId, profileuser }) {
             </label>
           </>
         )}
-      </h2>
-      <footer>
-        <span>Created : {formDate(new Date(post.createdAt))}</span>
-        {(imgUrl || post.img) && (
-          <img
+      </>
+      {/* NOTE: post image  */}
+
+      {(imgUrl || post.img) && (
+        <div className={"image-container"}>
+          <Image
             src={imgUrl ? imgUrl : post.img}
-            height={350}
-            style={{
-              objectFit: "contain",
-              display: "flex",
-              alignSelf: "self-start",
-            }}
+            layout="fill"
+            className={"image"}
           />
-        )}
-      </footer>
-      <span
-        onClick={async () => {
-          if (profileuser) {
-            setliked((old) => !old);
-            setlikesnum((old) => {
+        </div>
+      )}
+      {/* NOTE: likes bar and comments */}
+      <div className="expand">
+        <span
+          className="align-center-row gap cursor"
+          onClick={async () => {
+            if (profileuser) {
+              setliked((old) => !old);
+              setlikesnum((old) => {
+                if (!liked) {
+                  return ++old;
+                } else {
+                  return --old;
+                }
+              });
               if (!liked) {
-                return ++old;
+                await updateDoc(
+                  doc(fsDB, "users", post.uid, "posts", post.slug),
+                  {
+                    heartCound: arrayUnion(adminId),
+                  }
+                );
               } else {
-                return --old;
+                await updateDoc(
+                  doc(fsDB, "users", post.uid, "posts", post.slug),
+                  {
+                    heartCound: arrayRemove(adminId),
+                  }
+                );
               }
-            });
-            if (!liked) {
-              await updateDoc(
-                doc(fsDB, "users", post.uid, "posts", post.slug),
-                {
-                  heartCound: arrayUnion(profileuser.username),
-                }
-              );
             } else {
-              await updateDoc(
-                doc(fsDB, "users", post.uid, "posts", post.slug),
-                {
-                  heartCound: arrayRemove(profileuser.username),
-                }
-              );
+              confirm("you must be logged in");
             }
-          } else {
-            prompt("you must be logged in");
-          }
-        }}
-        className="push-left"
-      >
-        <img src={`${liked ? "/heartRED.png" : "/heartBLACK.png"}`} />
-        {likesnum}
-      </span>
+          }}
+        >
+          <img src={`${liked ? "/heartRED.png" : "/heartBLACK.png"}`} />
+          <p>{likesnum} likes</p>
+        </span>
+        <div className="align-center-row gap">
+          <Image src={"/share.png"} height={20} width={20} />
+          <p>Share</p>
+        </div>
+      </div>
+
       {editmode && (
         <button onClick={handleSub} className="btn-green ">
           save
