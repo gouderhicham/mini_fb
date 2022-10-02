@@ -149,7 +149,9 @@ export default function PostItem({ post, adminId, profileuser }) {
       </div>
       {/* NOTE: post content */}
       <>
-        <p style={{ opacity: 0, position: "absolute" }}>{post.content}</p>
+        <p style={{ opacity: 0, position: "absolute" , pointerEvents : "none" }}>
+          {post.content}
+        </p>
         {!editmode && (
           <>
             <p>
