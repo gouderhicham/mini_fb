@@ -62,7 +62,9 @@ const UserProfile = ({ PAGEuser, admin }) => {
         uid: user.uid,
       });
     }
-    setprofileuser((old) => ({ ...old, username: input }));
+    if(input !== ""){
+      setprofileuser((old) => ({ ...old, username: input }));  
+    }
     route.replace(input || profileuser.username);
   }
   return (
