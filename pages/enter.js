@@ -22,7 +22,7 @@ const Enter = () => {
             username={profileuser?.username}
           />
         ) : (
-          <SignOutButton />
+          <h1>{profileuser.username} logged in</h1>
         )
       ) : (
         <SignInButton />

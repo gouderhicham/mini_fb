@@ -4,12 +4,17 @@ import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { deleteDoc, doc, setDoc, updateDoc } from "firebase/firestore";
 import { fsDB, storage } from "../lib/firebase";
 import { AppContext } from "../lib/ContextNext";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { useRouter } from "next/router";
 const UserProfile = ({ PAGEuser, admin }) => {
+  const [animationParent] = useAutoAnimate();
+  const route = useRouter();
+  
   const [editmote, seteditmode] = useState(false);
   const [input, setinput] = useState("");
   const [imgUrl, setImgUrl] = useState(null);
   const [progresspercent, setProgresspercent] = useState(0);
-  const { user } = useContext(AppContext);
+  const { user, profileuser, setprofileuser } = useContext(AppContext);
   const onSelectFile = (e) => {
     const file = e.target?.files[0];
     if (!file) return;
@@ -57,12 +62,13 @@ const UserProfile = ({ PAGEuser, admin }) => {
         uid: user.uid,
       });
     }
-    window.location.replace(input);
+    setprofileuser((old) => ({ ...old, username: input }));
+    route.replace(input || profileuser.username);
   }
   return (
     <>
       {PAGEuser && (
-        <div className="box-center">
+        <div ref={animationParent} className="box-center">
           {admin && (
             <p
               style={{ backgroundColor: `${editmote ? "#818181" : "#C1BCBC"}` }}
@@ -91,7 +97,12 @@ const UserProfile = ({ PAGEuser, admin }) => {
               className="btn"
             >
               Upload Image
-              <input onChange={onSelectFile} type="file" accept="image/*" />
+              <input
+                autoFocus={true}
+                onChange={onSelectFile}
+                type="file"
+                accept="image/*"
+              />
             </label>
           )}
           <p>

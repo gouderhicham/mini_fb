@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@clave/use-debounce": "^1.2.0",
+    "@formkit/auto-animate": "^1.0.0-beta.3",
     "firebase": "^9.10.0",
     "next": "12.3.0",
     "nextjs-progressbar": "^0.0.14",

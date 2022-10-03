@@ -13,7 +13,11 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { fsDB, storage } from "../lib/firebase";
 import { formDate } from "../lib/hooks";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 export default function PostItem({ post, adminId, profileuser }) {
+  const [animationParent] = useAutoAnimate();
+  const [Parent] = useAutoAnimate();
+  const [editButtonsAnimation] = useAutoAnimate();
   const route = useRouter();
   const [editmode, seteditmode] = useState(false);
   const [expanded, setexpanded] = useState(false);
@@ -81,7 +85,7 @@ export default function PostItem({ post, adminId, profileuser }) {
           img: imgUrl,
         });
       }
-      window.location.reload();
+      route.replace(route.asPath);
     }
   }
   function returnShowNumber() {
@@ -95,7 +99,7 @@ export default function PostItem({ post, adminId, profileuser }) {
     updatePosts();
   }, []);
   return (
-    <div className="card">
+    <div ref={Parent} className="card">
       <div className="expand">
         {/* NOTE: profile img and username and date */}
         <Link href={`/${post.username}`}>
@@ -114,7 +118,7 @@ export default function PostItem({ post, adminId, profileuser }) {
         </Link>
         {/* NOTE: edit button  */}
         {adminId === post?.uid && (
-          <div className="expand-btns">
+          <div ref={editButtonsAnimation} className="expand-btns">
             <strong
               onClick={() => {
                 setexpanded((old) => !old);
@@ -136,7 +140,7 @@ export default function PostItem({ post, adminId, profileuser }) {
                     await deleteDoc(
                       doc(fsDB, "users", post.uid, "posts", post.slug)
                     );
-                    window.location.reload();
+                    route.replace(route.asPath);
                   }}
                   className="cursor"
                 >
@@ -149,12 +153,12 @@ export default function PostItem({ post, adminId, profileuser }) {
       </div>
       {/* NOTE: post content */}
       <>
-        <p style={{ opacity: 0, position: "absolute" , pointerEvents : "none" }}>
+        <p style={{ opacity: 0, position: "absolute", pointerEvents: "none" }}>
           {post.content}
         </p>
         {!editmode && (
           <>
-            <p>
+            <p ref={animationParent}>
               {showmore ? (
                 <>{post.content}</>
               ) : (
@@ -177,7 +181,7 @@ export default function PostItem({ post, adminId, profileuser }) {
           </>
         )}
         {editmode && (
-          <>
+          <div>
             <textarea
               className="textarea"
               rows="10"
@@ -198,7 +202,7 @@ export default function PostItem({ post, adminId, profileuser }) {
               Upload Image
               <input onChange={onSelectFile} type="file" accept="image/*" />
             </label>
-          </>
+          </div>
         )}
       </>
       {/* NOTE: post image  */}
