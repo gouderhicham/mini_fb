@@ -64,7 +64,7 @@ export default function PostItem({ post, adminId, profileuser }) {
       await updateDoc(doc(fsDB, "users", post.uid, "posts", post.slug), {
         username: data.data().username,
         Proimg: data.data().photoURL,
-      });
+      }).catch((err) => console.log("no doc to update"));
     }
   }
   async function handleSub() {
@@ -130,8 +130,11 @@ export default function PostItem({ post, adminId, profileuser }) {
             {expanded && (
               <div className="thh">
                 <div
-                  onClick={() => seteditmode((old) => !old)}
-                  className="cursor"
+                  onClick={(e) => {
+                    e.target.classList.toggle("clicked");
+                    seteditmode((old) => !old);
+                  }}
+                  className="cursor edit"
                 >
                   ✎
                 </div>
@@ -142,7 +145,7 @@ export default function PostItem({ post, adminId, profileuser }) {
                     );
                     route.replace(route.asPath);
                   }}
-                  className="cursor"
+                  className="cursor delete"
                 >
                   🗑️
                 </div>
@@ -164,7 +167,7 @@ export default function PostItem({ post, adminId, profileuser }) {
               ) : (
                 <>
                   {post.content.slice(0, returnShowNumber())}
-                  {showmore ? "" : "..."}
+                  {showmore ? "" : post.content.length > 250 && "..."}
                 </>
               )}
               <>
@@ -236,14 +239,14 @@ export default function PostItem({ post, adminId, profileuser }) {
                   {
                     heartCound: arrayUnion(adminId),
                   }
-                );
+                ).catch(err => console.log("no content to like"))
               } else {
                 await updateDoc(
                   doc(fsDB, "users", post.uid, "posts", post.slug),
                   {
                     heartCound: arrayRemove(adminId),
                   }
-                );
+                ).catch(err => console.log("no content to like"))
               }
             } else {
               confirm("you must be logged in");
