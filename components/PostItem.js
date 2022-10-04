@@ -109,6 +109,7 @@ export default function PostItem({ post, adminId, profileuser }) {
               width={50}
               height={50}
               src={post.Proimg}
+              objectFit = "cover"
             />
             <div className="flex-start">
               <strong> {post.username}</strong>
@@ -214,10 +215,11 @@ export default function PostItem({ post, adminId, profileuser }) {
         <div className={"image-container"}>
           <Image
             src={imgUrl ? imgUrl : post.img}
-            layout="fill"
+            layout='fill'
             className={"image"}
           />
         </div>
+
       )}
       {/* NOTE: likes bar and comments */}
       <div className="expand">

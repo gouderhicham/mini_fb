@@ -187,7 +187,7 @@ button.btn-logo {
 
 .card {
   padding: 2rem;
-  margin: 1rem 0;
+  margin: 1.5rem 0;
   background-color: white;
   border: 1px solid var(--color-gray);
   border-radius: 8px;
@@ -197,9 +197,9 @@ button.btn-logo {
   display: flex;
   flex-direction: column;
 }
-p{
+p {
   word-break: break-all;
-    white-space: normal;
+  white-space: normal;
 }
 .card-img-center {
   width: 25% !important;
@@ -395,6 +395,7 @@ input[type="file"] {
 }
 .expand {
   display: flex;
+  width: 100%;
   align-items: center;
   justify-content: space-between;
 }
@@ -412,16 +413,18 @@ input[type="file"] {
 .profile-pic {
   border-radius: 50%;
 }
+
 .image-container {
   width: 100%;
-  height: 550px;
+  height: 450px;
   position: relative;
 }
 .image-container .image {
   width: 100%;
-  position: relative !important;
+  height: auto;
   object-fit: cover;
 }
+
 .expand-btns {
   display: flex;
   flex-direction: column;
@@ -477,7 +480,7 @@ textarea {
   cursor: pointer;
   font-size: 12px;
   font-weight: bold;
-  word-break:keep-all;
+  word-break: keep-all;
   margin-left: 0.3rem;
 }
 .edit {
@@ -492,6 +495,60 @@ textarea {
   border-bottom-right-radius: 10px;
   background-color: var(--color-red);
 }
-.clicked{
+.labeling {
+  width: 60%;
+  cursor: pointer;
+  margin: 0.25rem 0;
+}
+.clicked {
   background-color: rgb(55, 55, 255);
+}
+img {
+  object-fit: fill;
+}
+@media screen and (max-width: 1300px) {
+  main {
+    padding: 0.7rem 7vw;
+  }
+}
+@media screen and (max-width: 900px) {
+  .card {
+    padding: 1.2rem;
+  }
+}
+@media screen and (max-width: 650px) {
+  .btn,
+  button {
+    padding: 0.4rem 0.6rem !important;
+    font-size: 17px !important;
+  }
+  .btn-logo {
+    padding: 0.4rem 0.6rem !important;
+    font-size: 17px !important;
+  }
+  .form textarea {
+    width: 100%;
+  }
+  .form .labeling {
+    width: 100% !important;
+  }
+}
+@media screen and (max-width: 500px) {
+  .image-container {
+    height: 270px;
+  }
+  .image-container .image {
+    object-fit: fill;
+  }
+}
+@media screen and (max-width: 360px) {
+  html {
+    font-size: 75%;
+  }
+  .edit-button {
+    font-size: 24px;
+  }
+  .image-container {
+    height: 200px;
+  }
 }

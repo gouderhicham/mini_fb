@@ -22,7 +22,7 @@ function PostPage() {
       "state_changed",
       (snapshot) => {
         const progress = Math.round(
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 60
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
         );
         setProgresspercent(progress);
       },
@@ -74,6 +74,7 @@ function PostPage() {
               width={50}
               height={50}
               src={profileuser?.photoURL}
+              objectFit="cover"
             />
           )}
           <div className="flex-start">
@@ -98,9 +99,9 @@ function PostPage() {
           </div>
         )}
 
-        <label
+        <label 
           style={{ width: "60%", cursor: "pointer", margin: "0.25rem 0" }}
-          className="btn"
+          className="btn labeling"
         >
           Upload Image
           <input onChange={onSelectFile} type="file" accept="image/*" />
@@ -112,7 +113,6 @@ function PostPage() {
               width: `${progresspercent}%`,
             }}
           >
-            {progresspercent}%
           </div>
         )}
         <button className="btn-green" type="submit">

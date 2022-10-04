@@ -135,7 +135,7 @@ function SignInButton() {
     </div>
   );
 }
-async function checkusername(username, setvalid, setloading) {
+export async function checkusername(username, setvalid, setloading) {
   const docRef = doc(fsDB, "usernames", username);
   const docSnap = await getDoc(docRef);
   let NEWdata = docSnap.exists();

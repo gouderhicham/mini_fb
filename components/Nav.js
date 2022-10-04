@@ -17,13 +17,11 @@ const Nav = () => {
           <>
             <li>
               <Link href={"/admin"}>
-                <button className="btn-blue">Post</button>
+                <button className="btn-blue post">Post</button>
               </Link>
             </li>
             <div style={{ display: "flex", alignItems: "center" }}>
-              <li>
-                <SignOutButton />
-              </li>
+              
               <li>
                 <Link href={`/${profileuser?.username}`}>
                   <div className="label">
@@ -38,6 +36,7 @@ const Nav = () => {
                           src={profileuser?.photoURL}
                           height={50}
                           width={50}
+                          objectFit = "cover"
                         />
                       )}
                     </span>
