@@ -85,7 +85,11 @@ export default function PostItem({ post, adminId, profileuser }) {
           img: imgUrl,
         });
       }
-      route.replace(route.asPath);
+      if (route.query.username) {
+        route.replace(route.asPath);
+      } else {
+        window.location.replace(route.asPath);
+      }
     }
   }
   function returnShowNumber() {
@@ -109,7 +113,7 @@ export default function PostItem({ post, adminId, profileuser }) {
               width={50}
               height={50}
               src={post.Proimg}
-              objectFit = "cover"
+              objectFit="cover"
             />
             <div className="flex-start">
               <strong> {post.username}</strong>
@@ -144,7 +148,12 @@ export default function PostItem({ post, adminId, profileuser }) {
                     await deleteDoc(
                       doc(fsDB, "users", post.uid, "posts", post.slug)
                     );
-                    route.replace(route.asPath);
+
+                    if (route.query.username) {
+                      route.replace(route.asPath);
+                    } else {
+                      window.location.replace(route.asPath);
+                    }
                   }}
                   className="cursor delete"
                 >
@@ -215,11 +224,10 @@ export default function PostItem({ post, adminId, profileuser }) {
         <div className={"image-container"}>
           <Image
             src={imgUrl ? imgUrl : post.img}
-            layout='fill'
+            layout="fill"
             className={"image"}
           />
         </div>
-
       )}
       {/* NOTE: likes bar and comments */}
       <div className="expand">
@@ -241,14 +249,14 @@ export default function PostItem({ post, adminId, profileuser }) {
                   {
                     heartCound: arrayUnion(adminId),
                   }
-                ).catch(err => console.log("no content to like"))
+                ).catch((err) => console.log("no content to like"));
               } else {
                 await updateDoc(
                   doc(fsDB, "users", post.uid, "posts", post.slug),
                   {
                     heartCound: arrayRemove(adminId),
                   }
-                ).catch(err => console.log("no content to like"))
+                ).catch((err) => console.log("no content to like"));
               }
             } else {
               confirm("you must be logged in");
