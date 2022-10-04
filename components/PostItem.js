@@ -115,6 +115,7 @@ export default function PostItem({ post, adminId, profileuser }) {
               src={post.Proimg}
               objectFit="cover"
             />
+
             <div className="flex-start">
               <strong> {post.username}</strong>
               <span>{formDate(new Date(post.createdAt))}</span>
