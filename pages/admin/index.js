@@ -94,15 +94,12 @@ function PostPage() {
           placeholder="what's on your mind today ... "
         />
         {imgUrl && (
-          <div className={"image-container"}>
+          <div className={"image-container postImg"}>
             <Image src={imgUrl} layout="fill" className={"image"} />
           </div>
         )}
 
-        <label 
-          style={{ width: "60%", cursor: "pointer", margin: "0.25rem 0" }}
-          className="btn labeling"
-        >
+        <label className="btn labeling">
           Upload Image
           <input onChange={onSelectFile} type="file" accept="image/*" />
         </label>
@@ -113,9 +110,16 @@ function PostPage() {
               width: `${progresspercent}%`,
             }}
           >
+            {progresspercent}
           </div>
         )}
-        <button className="btn-green" type="submit">
+        <button
+          disabled={
+            progresspercent !== 0 && progresspercent !== 100 ? true : false
+          }
+          className="btn-green"
+          type="submit"
+        >
           Post
         </button>
       </form>

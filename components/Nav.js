@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { AppContext } from "../lib/ContextNext";
 import { useContext } from "react";
-import { SignOutButton } from "../pages/enter";
 import Image from "next/image";
 const Nav = () => {
   let { profileuser } = useContext(AppContext);
@@ -49,7 +48,7 @@ const Nav = () => {
         {!profileuser?.username && (
           <>
             <li>
-              <Link href={"/enter"}>
+              <Link href={"/signin"}>
                 <button className="btn-blue">Log in</button>
               </Link>
             </li>

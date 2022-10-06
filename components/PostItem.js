@@ -19,6 +19,7 @@ export default function PostItem({ post, adminId, profileuser }) {
   const [Parent] = useAutoAnimate();
   const [editButtonsAnimation] = useAutoAnimate();
   const route = useRouter();
+  const [valid, setvalid] = useState(false);
   const [editmode, seteditmode] = useState(false);
   const [expanded, setexpanded] = useState(false);
   const [imgUrl, setImgUrl] = useState(null);
@@ -101,7 +102,26 @@ export default function PostItem({ post, adminId, profileuser }) {
   }
   useEffect(() => {
     updatePosts();
+    console.log("post updatted");
   }, []);
+  useEffect(() => {
+    if (input !== post.content && input !== "" && imgUrl === null) {
+      setvalid(true);
+    } else if (
+      (input === "" && imgUrl === null) ||
+      (input === post.content && imgUrl === null)
+    ) {
+      setvalid(false);
+    }
+  }, [input]);
+  useEffect(() => {
+    if (
+      (input === post.content && imgUrl !== null) ||
+      (input === "" && imgUrl !== null)
+    ) {
+      setvalid(true);
+    }
+  }, [imgUrl]);
   return (
     <div ref={Parent} className="card">
       <div className="expand">
@@ -274,7 +294,7 @@ export default function PostItem({ post, adminId, profileuser }) {
       </div>
 
       {editmode && (
-        <button onClick={handleSub} className="btn-green ">
+        <button disabled={!valid} onClick={handleSub} className="btn-green ">
           save
         </button>
       )}

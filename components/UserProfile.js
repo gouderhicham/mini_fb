@@ -6,7 +6,7 @@ import { fsDB, storage } from "../lib/firebase";
 import { AppContext } from "../lib/ContextNext";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
-import { SignOutButton, checkusername } from "../pages/enter";
+import { SignOutButton, checkusername } from "../lib/hooks";
 import useDebounce from "@clave/use-debounce";
 import Loader from "./Loader";
 const UserProfile = ({ PAGEuser, admin }) => {
@@ -83,11 +83,19 @@ const UserProfile = ({ PAGEuser, admin }) => {
   }, [delayedInput]);
   useEffect(() => {
     setloading(true);
-    if (input.length === 0) {
+    if (input.length === 0 && imgUrl !== null) {
+      setloading(false);
+      setvalid(true);
+    } else if (input.length === 0 && imgUrl === null) {
+      setvalid(false);
+    }
+  }, [input]);
+  useEffect(() => {
+    if (input.length === 0 && imgUrl !== null) {
       setloading(false);
       setvalid(true);
     }
-  }, [input]);
+  }, [imgUrl]);
   return (
     <>
       {PAGEuser && (
@@ -114,13 +122,15 @@ const UserProfile = ({ PAGEuser, admin }) => {
               className="card-img-center"
               objectFit="cover"
             />
-            {!imgUrl && progresspercent !== 0 && (
+            {imgUrl && progresspercent !== 0 && (
               <div
                 className="innerbar"
                 style={{
-                  width: `${progresspercent}%`,
+                  width: `${progresspercent * (100 / 60)}%`,
                 }}
-              ></div>
+              >
+                {progresspercent * (100 / 60)}%
+              </div>
             )}
           </div>
           {editmote && (

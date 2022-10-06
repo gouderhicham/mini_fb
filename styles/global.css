@@ -452,12 +452,12 @@ input[type="file"] {
   color: white;
 }
 .form {
-  width: 100%;
+  width: 60%;
   display: flex;
   flex-direction: column;
 }
 textarea {
-  width: 60%;
+  width: 100%;
   font-size: 17px;
   padding: 1rem;
 }
@@ -496,7 +496,7 @@ textarea {
   background-color: var(--color-red);
 }
 .labeling {
-  width: 60%;
+  width: 100%;
   cursor: pointer;
   margin: 0.25rem 0;
 }
@@ -515,22 +515,29 @@ img {
   .card {
     padding: 1.2rem;
   }
+  .form {
+    width: 100%;
+  }
 }
 @media screen and (max-width: 650px) {
   .btn,
   button {
-    padding: 0.4rem 0.6rem !important;
+    padding: -0.4rem -0.6rem !important;
     font-size: 17px !important;
   }
   .btn-logo {
     padding: 0.4rem 0.6rem !important;
     font-size: 17px !important;
   }
+
   .form textarea {
     width: 100%;
   }
   .form .labeling {
     width: 100% !important;
+  }
+  .sign-in-form {
+    padding: 3.9rem;
   }
 }
 @media screen and (max-width: 500px) {
@@ -550,5 +557,14 @@ img {
   }
   .image-container {
     height: 200px;
+  }
+  .sign-in-form {
+    padding: 2rem;
+  }
+  .sign-in-form {
+    padding: 2rem;
+  }
+  .btn-google {
+    font-size: 13px !important;
   }
 }
