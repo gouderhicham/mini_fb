@@ -17,6 +17,7 @@ const SignIn = () => {
           name="description"
           content="Mini fb sign in page to link a google user account"
         ></meta>
+        <meta name="robots" content="gouder hicham mini fb page"></meta>
         <meta name="keywords" content="gouder hicham , gouder , hicham , gouderhicham github , mini gb"/>
         <meta name="author" content="gouder hicham"></meta>
 

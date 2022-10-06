@@ -10,6 +10,7 @@ function MyApp({ Component, pageProps }) {
     <>
       <Head>
         <title>Next app</title>
+        <meta name="robots" content="gouder hicham mini fb page"></meta>
         <link rel="icon" href="/favicon.ico" />
         <meta name="description" content="this is the index page"></meta>
         <meta name="author" content="gouder hicham"></meta>

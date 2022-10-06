@@ -28,6 +28,7 @@ const UsernamePage = ({ userData, posts, id }) => {
     <>
       <Head>
         <title>{userData.username}</title>
+        <meta name="robots" content="gouder hicham mini fb page"></meta>
         <meta
           name="keywords"
           content="gouder hicham , gouder , hicham , gouderhicham github , mini gb"
