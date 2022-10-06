@@ -9,14 +9,12 @@ import {
   where,
 } from "firebase/firestore";
 import Head from "next/head";
-import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import Posts from "../../components/Posts";
 import UserProfile from "../../components/UserProfile";
 import { AppContext } from "../../lib/ContextNext";
 import { fsDB } from "../../lib/firebase";
 const UsernamePage = ({ userData, posts, id }) => {
-  const route = useRouter();
   const [isadmin, setisadmin] = useState(false);
   const { user } = useContext(AppContext);
   useEffect(() => {
@@ -29,10 +27,26 @@ const UsernamePage = ({ userData, posts, id }) => {
   return (
     <>
       <Head>
-        <title>
-          {route.query.username[0].toUpperCase() +
-            route.query.username.slice(1)}
-        </title>
+        <title>{userData.username}</title>
+        <meta
+          name="keywords"
+          content="gouder hicham , gouder , hicham , gouderhicham github , mini gb"
+        />
+        <meta
+          name="description"
+          content={`${userData.username} user page .`}
+        ></meta>
+        <meta name="author" content="gouder hicham"></meta>
+
+        <meta property="og:image" content={userData.photoURL} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={userData.photoURL} />
+        <meta property="og:title" content={userData.username} />
+        <meta
+          property="og:description"
+          content={`${userData.username} user page .`}
+        />
+        <meta name="author" content="gouder hicham"></meta>
       </Head>
       <main>
         <UserProfile PAGEuser={userData} admin={isadmin} />

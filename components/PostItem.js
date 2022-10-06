@@ -102,7 +102,6 @@ export default function PostItem({ post, adminId, profileuser }) {
   }
   useEffect(() => {
     updatePosts();
-    console.log("post updatted");
   }, []);
   useEffect(() => {
     if (input !== post.content && input !== "" && imgUrl === null) {
