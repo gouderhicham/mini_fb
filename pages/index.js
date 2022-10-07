@@ -48,9 +48,12 @@ export default function Home({ posts }) {
         <meta name="author" content="gouder hicham"></meta>
         <meta property="og:type" content="website" />
         <meta property="og:url" content={"home page"} />
-        <meta property="og:title" content="home page mini fb github" />
-        <meta property="og:description" content="home page github mini fb" />
-        <meta property="og:image" />
+        <meta property="og:title" content="Mini Fb | Gouder hicham" />
+        <meta
+          property="og:description"
+          content="Mini fb Home page created with next js that is generated with the power of electrecity"
+        />
+        <meta property="og:image" content="https://www.site-shot.com/cached_image/lwxuQkZEEe2qrAJCrBEABA" />
         <meta
           name="keywords"
           content="gouder hicham , gouder , hicham , gouderhicham github , mini gb"
