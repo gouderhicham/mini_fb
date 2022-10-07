@@ -27,7 +27,7 @@ const UsernamePage = ({ userData, posts, id }) => {
   return (
     <>
       <Head>
-        <title>{userData.username}</title>
+        <title>{userData.username} | Mini Fb</title>
         <meta name="robots" content="gouder hicham mini fb page"></meta>
         <meta
           name="keywords"
@@ -35,17 +35,17 @@ const UsernamePage = ({ userData, posts, id }) => {
         />
         <meta
           name="description"
-          content={`${userData.username} user page .`}
+          content={`this is the user page of ${userData.username} and this paragraph is generated for fb crawlers to pereview data`}
         ></meta>
         <meta name="author" content="gouder hicham"></meta>
 
         <meta property="og:image" content={userData.photoURL} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={userData.photoURL} />
-        <meta property="og:title" content={userData.username} />
+        <meta property="og:title" content={`${userData.username} | Mini Fb`} />
         <meta
           property="og:description"
-          content={`${userData.username} user page .`}
+          content={`this is the user page of ${userData.username} and this paragraph is generated for fb crawlers to pereview data`}
         />
         <meta name="author" content="gouder hicham"></meta>
       </Head>

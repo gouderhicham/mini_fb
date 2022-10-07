@@ -1,9 +1,10 @@
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { fsDB, storage } from "../../lib/firebase";
 import { AppContext } from "../../lib/ContextNext";
 import { useRouter } from "next/router";
+import Head from "next/head";
 import Image from "next/image";
 function PostPage() {
   const route = useRouter();
@@ -65,65 +66,70 @@ function PostPage() {
     return <h1>you must be logged in</h1>;
   }
   return (
-    <main>
-      <form onSubmit={handleSubmit} className="form">
-        <a className="gap center bottom">
-          {profileuser?.photoURL && (
-            <Image
-              className="profile-pic"
-              width={50}
-              height={50}
-              src={profileuser?.photoURL}
-              objectFit="cover"
-            />
+    <>
+    <Head>
+      <title>Post Page | Mini Fb</title>
+    </Head>
+      <main>
+        <form onSubmit={handleSubmit} className="form">
+          <a className="gap center bottom">
+            {profileuser?.photoURL && (
+              <Image
+                className="profile-pic"
+                width={50}
+                height={50}
+                src={profileuser?.photoURL}
+                objectFit="cover"
+              />
+            )}
+            <div className="flex-start">
+              <strong>{profileuser?.username}</strong>
+            </div>
+          </a>
+          <textarea
+            rows="10"
+            type={"text"}
+            value={form.content}
+            onChange={(e) =>
+              setform((old) => ({
+                ...old,
+                content: e.target.value,
+              }))
+            }
+            placeholder="what's on your mind today ... "
+          />
+          {imgUrl && (
+            <div className={"image-container postImg"}>
+              <Image src={imgUrl} layout="fill" className={"image"} />
+            </div>
           )}
-          <div className="flex-start">
-            <strong>{profileuser?.username}</strong>
-          </div>
-        </a>
-        <textarea
-          rows="10"
-          type={"text"}
-          value={form.content}
-          onChange={(e) =>
-            setform((old) => ({
-              ...old,
-              content: e.target.value,
-            }))
-          }
-          placeholder="what's on your mind today ... "
-        />
-        {imgUrl && (
-          <div className={"image-container postImg"}>
-            <Image src={imgUrl} layout="fill" className={"image"} />
-          </div>
-        )}
 
-        <label className="btn labeling">
-          Upload Image
-          <input onChange={onSelectFile} type="file" accept="image/*" />
-        </label>
-        {!imgUrl && progresspercent !== 0 && (
-          <div
-            className="innerbar"
-            style={{
-              width: `${progresspercent}%`,
-            }}
+          <label className="btn labeling">
+            Upload Image
+            <input onChange={onSelectFile} type="file" accept="image/*" />
+          </label>
+          {!imgUrl && progresspercent !== 0 && (
+            <div
+              className="innerbar"
+              style={{
+                width: `${progresspercent}%`,
+              }}
+            >
+              {progresspercent}
+            </div>
+          )}
+          <button
+            disabled={
+              progresspercent !== 0 && progresspercent !== 100 ? true : false
+            }
+            className="btn-green"
+            type="submit"
           >
-            {progresspercent}
-          </div>
-        )}
-        <button
-          disabled={
-            progresspercent !== 0 && progresspercent !== 100 ? true : false
-          }
-          className="btn-green"
-          type="submit"
-        >
-          Post
-        </button>
-      </form>
-    </main>
+            Post
+          </button>
+        </form>
+      </main>
+    </>
   );
 }
 export default PostPage;
