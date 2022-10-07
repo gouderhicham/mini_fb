@@ -14,7 +14,8 @@ import Posts from "../../components/Posts";
 import UserProfile from "../../components/UserProfile";
 import { AppContext } from "../../lib/ContextNext";
 import { fsDB } from "../../lib/firebase";
-const UsernamePage = ({ userData, posts, id }) => {
+import { return_url } from "../../lib/hooks";
+const UsernamePage = ({ userData, posts, id, image }) => {
   const [isadmin, setisadmin] = useState(false);
   const { user } = useContext(AppContext);
   useEffect(() => {
@@ -39,7 +40,7 @@ const UsernamePage = ({ userData, posts, id }) => {
         ></meta>
         <meta name="author" content="gouder hicham"></meta>
 
-        <meta property="og:image" content={userData.photoURL} />
+        <meta property="og:image" content={image} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={userData.photoURL} />
         <meta property="og:title" content={`${userData.username} | Mini Fb`} />
@@ -80,8 +81,15 @@ export async function getServerSideProps(context) {
     querySnapshot.forEach(async (doc) => {
       postsDATA.push(doc.data());
     });
+    const params = context.resolvedUrl;
+    const base = return_url(context);
+    const url = `${base}${params}`;
+    const image = await fetch(
+      `https://api.savepage.io/v1/?key=96d39481fc5e144daf42d4b3d03fccee&q=${url}`
+    ).then((res) => res.url);
     return {
       props: {
+        image: image,
         userData: data,
         posts: postsDATA,
         id: userData,

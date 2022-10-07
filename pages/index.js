@@ -9,10 +9,11 @@ import {
 } from "firebase/firestore";
 import { fsDB } from "../lib/firebase";
 import { useState } from "react";
+import { return_url } from "../lib/hooks";
 import Posts from "../components/Posts";
 import Loader from "../components/Loader";
 import Head from "next/head";
-export default function Home({ posts }) {
+export default function Home({ posts, image }) {
   const [stateposts, setstateposts] = useState(posts);
   const [loading, setloading] = useState(false);
   const [postend, setpostend] = useState(false);
@@ -53,7 +54,7 @@ export default function Home({ posts }) {
           property="og:description"
           content="Mini fb Home page created with next js that is generated with the power of electrecity"
         />
-        <meta property="og:image" content="https://www.site-shot.com/cached_image/lwxuQkZEEe2qrAJCrBEABA" />
+        <meta property="og:image" content={image} />
         <meta
           name="keywords"
           content="gouder hicham , gouder , hicham , gouderhicham github , mini gb"
@@ -67,7 +68,7 @@ export default function Home({ posts }) {
     </>
   );
 }
-export async function getServerSideProps() {
+export async function getServerSideProps(context) {
   let posts = [];
   // NOTE: get all the posts from all users
   const ref = collectionGroup(fsDB, "posts");
@@ -81,8 +82,15 @@ export async function getServerSideProps() {
   querySnapshot.forEach((doc) => {
     posts.push(doc.data());
   });
+  const params = context.resolvedUrl;
+  const base = return_url(context);
+  const url = `${base}${params}`;
+  const image = await fetch(
+    `https://api.savepage.io/v1/?key=96d39481fc5e144daf42d4b3d03fccee&q=${url}`
+  ).then((res) => res.url);
   return {
     props: {
+      image: image,
       posts: posts,
     },
   };

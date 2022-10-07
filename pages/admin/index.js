@@ -6,7 +6,7 @@ import { AppContext } from "../../lib/ContextNext";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Image from "next/image";
-function PostPage() {
+function PostPage({ image }) {
   const route = useRouter();
   const [form, setform] = useState({
     content: "",
@@ -67,9 +67,9 @@ function PostPage() {
   }
   return (
     <>
-    <Head>
-      <title>Post Page | Mini Fb</title>
-    </Head>
+      <Head>
+        <title>Post Page | Mini Fb</title>
+      </Head>
       <main>
         <form onSubmit={handleSubmit} className="form">
           <a className="gap center bottom">
