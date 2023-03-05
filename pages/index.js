@@ -85,29 +85,39 @@ export default function Home({ posts, image }) {
 }
 
 export async function getStaticProps() {
-  let posts = [];
-  const ref = collectionGroup(fsDB, "posts");
-  const q = query(
-    ref,
-    orderBy("createdAt", "desc"),
-    where("published", "==", true),
-    limit(POSTS_PER_PAGE)
-  );
-  const querySnapshot = await getDocs(q);
-  querySnapshot.forEach((doc) => {
-    posts.push(doc.data());
-  });
-  const params = "";
-  const base = "";
-  const url = `${base}${params}`;
-  const image = await fetch(
-    `https://api.savepage.io/v1/?key=96d39481fc5e144daf42d4b3d03fccee&q=${url}`
-  ).then((res) => res.url);
+  try {
+    const ref = collectionGroup(fsDB, "posts");
+    const q = query(
+      ref,
+      orderBy("createdAt", "desc"),
+      where("published", "==", true),
+      limit(POSTS_PER_PAGE)
+    );
+    const [querySnapshot, imageResponse] = await Promise.all([
+      getDocs(q),
+      fetch(
+        `https://api.savepage.io/v1/?key=96d39481fc5e144daf42d4b3d03fccee&q=${url}`
+      ),
+    ]);
+    const posts = querySnapshot.docs.map((doc) => doc.data());
+    const image = await imageResponse.url;
+    const params = "";
+    const base = "";
+    const url = `${base}${params}`;
 
-  return {
-    props: {
-      image,
-      posts,
-    },
-  };
+    return {
+      props: {
+        image,
+        posts,
+      },
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      props: {
+        image: "",
+        posts: [],
+      },
+    };
+  }
 }
