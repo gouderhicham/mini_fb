@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import {
   collectionGroup,
   query,
@@ -10,13 +11,21 @@ import {
 import { fsDB } from "../lib/firebase";
 import { useState } from "react";
 import { return_url } from "../lib/hooks";
-import Posts from "../components/Posts";
-import Loader from "../components/Loader";
+const Posts = dynamic(() => import("../components/Posts"), {
+  loading: () => <div>...loading</div>,
+});
+const Loader = dynamic(() => import("../components/Loader"), {
+  loading: () => <div>...loading</div>,
+});
 import Head from "next/head";
+
+const POSTS_PER_PAGE = 5; // Limit the initial number of posts to be loaded
+
 export default function Home({ posts, image }) {
-  const [stateposts, setstateposts] = useState(posts);
+  const [stateposts, setstateposts] = useState(posts.slice(0, POSTS_PER_PAGE)); // Load only the initial number of posts
   const [loading, setloading] = useState(false);
   const [postend, setpostend] = useState(false);
+
   async function getMorePosts() {
     setloading(true);
     let newPOSTS = [];
@@ -27,18 +36,20 @@ export default function Home({ posts, image }) {
       orderBy("createdAt", "desc"),
       startAfter(last),
       where("published", "==", true),
-      limit(5)
+      limit(POSTS_PER_PAGE) // Load more posts per click
     );
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
-      setstateposts((oldposts) => [...oldposts, doc.data()]);
-      setloading(false);
+      newPOSTS.push(doc.data());
     });
-    if (newPOSTS.length === 0) {
+    if (newPOSTS.length > 0) {
+      setstateposts((oldposts) => [...oldposts, ...newPOSTS]);
+    } else {
       setpostend(true);
-      setloading(false);
     }
+    setloading(false);
   }
+
   return (
     <>
       <Head>
@@ -62,36 +73,41 @@ export default function Home({ posts, image }) {
       </Head>
       <main>
         <Posts posts={stateposts} />
-        {!loading && <button onClick={getMorePosts}>Load more</button>}
+        {!postend && (
+          <button onClick={getMorePosts}>
+            {loading ? "Loading..." : "Load more"}
+          </button>
+        )}
         <Loader show={loading} />
       </main>
     </>
   );
 }
-export async function getServerSideProps(context) {
+
+export async function getStaticProps() {
   let posts = [];
-  // NOTE: get all the posts from all users
   const ref = collectionGroup(fsDB, "posts");
   const q = query(
     ref,
     orderBy("createdAt", "desc"),
     where("published", "==", true),
-    limit(5)
+    limit(POSTS_PER_PAGE)
   );
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
     posts.push(doc.data());
   });
-  const params = context.resolvedUrl;
-  const base = return_url(context);
+  const params = "";
+  const base = "";
   const url = `${base}${params}`;
   const image = await fetch(
     `https://api.savepage.io/v1/?key=96d39481fc5e144daf42d4b3d03fccee&q=${url}`
   ).then((res) => res.url);
+
   return {
     props: {
-      image: image,
-      posts: posts,
+      image,
+      posts,
     },
   };
 }

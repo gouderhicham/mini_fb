@@ -1,4 +1,4 @@
-import { setDoc, doc} from "firebase/firestore";
+import { setDoc, doc } from "firebase/firestore";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Loader from "../components/Loader";
@@ -19,16 +19,21 @@ export default function UsernameForm({ user, username, setsubmitclicked }) {
     if (loading) return;
     if (!valid) return;
     setsubmitclicked(true);
-    await setDoc(doc(fsDB, "users", user.uid), {
-      displayName: user.displayName,
-      photoURL: user.photoURL,
-      username: input.replace(/^\s+|\s+$/gm, ""),
-    });
-    await setDoc(doc(fsDB, `usernames`, input), {
-      uid: user.uid,
-    });
-    console.log("user added");
-    //NOTE:  =======================> :DONE
+    try {
+      await Promise.all([
+        setDoc(doc(fsDB, "users", user.uid), {
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+          username: input.replace(/^\s+|\s+$/gm, ""),
+        }),
+        setDoc(doc(fsDB, `usernames`, input), {
+          uid: user.uid,
+        }),
+      ]);
+      console.log("user added");
+    } catch (error) {
+      console.error(error);
+    }
   }
   let delayedInput = useDebounce(input, 400);
   useEffect(() => {
@@ -42,7 +47,7 @@ export default function UsernameForm({ user, username, setsubmitclicked }) {
   }, [delayedInput]);
   useEffect(() => {
     setloading(true);
-    setvalid(false)
+    setvalid(false);
   }, [input]);
   return (
     !username && (
@@ -56,15 +61,16 @@ export default function UsernameForm({ user, username, setsubmitclicked }) {
             name="username"
             placeholder="myname"
           />
-          <button
-            disabled={!valid}
-            type="submit"
-            className="btn-green"
-          >
+          <button disabled={!valid} type="submit" className="btn-green">
             Submit
           </button>
           <div className="align-center-row">
-            <Image src="/validation.png" width={30} height={30} />
+            <Image
+              src="/validation.png"
+              width={30}
+              height={30}
+              loading="lazy"
+            />
             <h4 style={{ paddingLeft: 5 }}>validation</h4>
           </div>
           <Loader show={loading} />

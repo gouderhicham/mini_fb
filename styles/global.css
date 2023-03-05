@@ -182,9 +182,29 @@ button.btn-logo {
   font-size: 1.5rem;
   padding: 0.5rem 1rem;
 }
-
+.btn-search {
+  background-color: var(--color-blue);
+  padding: 0.7rem;
+  border-radius: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-right: 0.75rem;
+}
+.search_input {
+  width: 90% !important;
+  border-radius: 0.25rem;
+  margin-right: 0.5rem;
+  border: 1px solid var(--color-gray);
+  font-size: 1.1rem;
+  outline: none;
+  padding: 0.75rem 0.4rem;
+}
+.search-closed {
+  width: 0%;
+}
 /* Cards */
-
 .card {
   padding: 2rem;
   margin: 1.5rem 0;
@@ -202,11 +222,11 @@ p {
   white-space: normal;
 }
 .card-img-center {
-  width: 25% !important;
+  width: 100% !important;
   display: block;
   margin: auto;
   border-radius: 50%;
-  max-width: 200px;
+  max-width: 300px;
 }
 
 .card-info {
@@ -234,7 +254,7 @@ p {
   }
 }
 
-/* File uploads */
+/*NOTE: File uploads */
 
 input[type="file"] {
   display: none;
@@ -529,7 +549,13 @@ img {
     padding: 0.4rem 0.6rem !important;
     font-size: 17px !important;
   }
-
+  .post {
+    font-size: 17px !important;
+    padding: 0.4rem 0.6rem !important;
+  }
+  .btn-search {
+    padding: 0.4rem 0.6rem;
+  }
   .form textarea {
     width: 100%;
   }
@@ -539,6 +565,9 @@ img {
   .sign-in-form {
     padding: 3.9rem;
   }
+  .search_input {
+    padding: 0.25rem 0.3rem;
+  }
 }
 @media screen and (max-width: 500px) {
   .image-container {
@@ -546,6 +575,9 @@ img {
   }
   .image-container .image {
     object-fit: fill;
+  }
+  .navbar {
+    padding: 0 5vw;
   }
 }
 @media screen and (max-width: 360px) {

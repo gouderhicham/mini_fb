@@ -6,7 +6,7 @@ import { AppContext } from "../../lib/ContextNext";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Image from "next/image";
-function PostPage({ image }) {
+export default function PostPage({ image }) {
   const route = useRouter();
   const [form, setform] = useState({
     content: "",
@@ -80,6 +80,7 @@ function PostPage({ image }) {
                 height={50}
                 src={profileuser?.photoURL}
                 objectFit="cover"
+                loading="eager"
               />
             )}
             <div className="flex-start">
@@ -100,7 +101,7 @@ function PostPage({ image }) {
           />
           {imgUrl && (
             <div className={"image-container postImg"}>
-              <Image src={imgUrl} layout="fill" className={"image"} />
+              <Image src={imgUrl} layout="fill" className={"image"} loading="lazy" />
             </div>
           )}
 
@@ -132,4 +133,3 @@ function PostPage({ image }) {
     </>
   );
 }
-export default PostPage;

@@ -1,28 +1,53 @@
 import Link from "next/link";
 import { AppContext } from "../lib/ContextNext";
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
 import Image from "next/image";
 const Nav = () => {
+  const [isLoading, setIsLoading] = useState(true);
   let { profileuser } = useContext(AppContext);
+  const [searchClicked, setSearchClicked] = useState(false);
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, [profileuser]);
+
   return (
     <nav className="navbar">
       <ul>
-        <li className="feed">
-          <Link href={"/"}>
-            <button className="btn-logo">MINI FB</button>
-          </Link>
-        </li>
+        {searchClicked && <input type="text" className={`search_input`} />}
+        {!searchClicked && (
+          <li className="feed">
+            <Link href={"/"} prefetch={false}>
+              <button className="btn-logo">MINI FB</button>
+            </Link>
+          </li>
+        )}
+        {isLoading && <div className="loading">Loading...</div>}
         {profileuser?.username && (
           <>
-            <li>
-              <Link href={"/admin"}>
-                <button className="btn-blue post">Post</button>
-              </Link>
-            </li>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              
+            {!searchClicked && (
               <li>
-                <Link href={`/${profileuser?.username}`}>
+                <Link prefetch={false} href={"/admin"}>
+                  <button className="btn-blue post">Post</button>
+                </Link>
+              </li>
+            )}
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div
+                onClick={() => {
+                  setSearchClicked((old) => !old);
+                }}
+                className="btn-search"
+              >
+                <Image
+                  src="/search.png"
+                  height={25}
+                  width={25}
+                  loading="lazy"
+                />
+              </div>
+              <li>
+                <a prefetch={false} href={`/${profileuser?.username}`}>
                   <div className="label">
                     <span
                       className="tooltip-toggle"
@@ -32,23 +57,25 @@ const Nav = () => {
                       {profileuser?.photoURL && (
                         <Image
                           className="profile-pic"
+                          loading="eager"
                           src={profileuser?.photoURL}
                           height={50}
                           width={50}
-                          objectFit = "cover"
+                          objectFit="cover"
                         />
                       )}
                     </span>
                   </div>
-                </Link>
+                </a>
               </li>
             </div>
           </>
         )}
+
         {!profileuser?.username && (
           <>
             <li>
-              <Link href={"/signin"}>
+              <Link prefetch={false} href={"/signin"}>
                 <button className="btn-blue">Log in</button>
               </Link>
             </li>
@@ -58,4 +85,5 @@ const Nav = () => {
     </nav>
   );
 };
+
 export default Nav;

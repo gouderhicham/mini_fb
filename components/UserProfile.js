@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState , useMemo } from "react";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { deleteDoc, doc, setDoc, updateDoc } from "firebase/firestore";
 import { fsDB, storage } from "../lib/firebase";
@@ -8,7 +8,9 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { SignOutButton, checkusername } from "../lib/hooks";
 import useDebounce from "@clave/use-debounce";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 import Loader from "./Loader";
+
 const UserProfile = ({ PAGEuser, admin }) => {
   const [animationParent] = useAutoAnimate();
   const route = useRouter();
@@ -49,22 +51,26 @@ const UserProfile = ({ PAGEuser, admin }) => {
         photoURL: imgUrl,
       });
     } else if (imgUrl === null && input !== "") {
-      await deleteDoc(doc(fsDB, "usernames", PAGEuser.username));
-      await updateDoc(doc(fsDB, "users", user.uid), {
-        username: input,
-      });
-      await setDoc(doc(fsDB, "usernames", input), {
-        uid: user.uid,
-      });
+      await Promise.all([
+        deleteDoc(doc(fsDB, "usernames", PAGEuser.username)),
+        updateDoc(doc(fsDB, "users", user.uid), {
+          username: input,
+        }),
+        setDoc(doc(fsDB, "usernames", input), {
+          uid: user.uid,
+        }),
+      ]);
     } else {
-      await deleteDoc(doc(fsDB, "usernames", PAGEuser.username));
-      await updateDoc(doc(fsDB, "users", user.uid), {
-        username: input,
-        photoURL: imgUrl,
-      });
-      await setDoc(doc(fsDB, "usernames", input), {
-        uid: user.uid,
-      });
+      await Promise.all([
+        deleteDoc(doc(fsDB, "usernames", PAGEuser.username)),
+        updateDoc(doc(fsDB, "users", user.uid), {
+          username: input,
+          photoURL: imgUrl,
+        }),
+        setDoc(doc(fsDB, "usernames", input), {
+          uid: user.uid,
+        }),
+      ]);
     }
     if (input !== "") {
       setprofileuser((old) => ({ ...old, username: input }));
@@ -115,12 +121,13 @@ const UserProfile = ({ PAGEuser, admin }) => {
             </div>
           )}
           <div style={{ width: "100%" }}>
-            <Image
-              width={300}
+            <LazyLoadImage
+              width={400}
               height={300}
               src={imgUrl ? imgUrl : PAGEuser.photoURL}
               className="card-img-center"
-              objectFit="cover"
+              
+              loading="lazy"
             />
             {imgUrl && progresspercent !== 0 && (
               <div
@@ -180,7 +187,12 @@ const UserProfile = ({ PAGEuser, admin }) => {
                 save
               </button>
               <div className="align-center-row">
-                <Image src="/validation.png" width={30} height={30} />
+                <Image
+                  src="/validation.png"
+                  width={30}
+                  height={30}
+                  loading="lazy"
+                />
                 <h4 style={{ paddingLeft: 5 }}>validation</h4>
               </div>
               <Loader show={loading} />

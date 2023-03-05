@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { AppContext } from "../lib/ContextNext";
-import PostItem from "./PostItem";
+import dynamic from "next/dynamic";
+const PostItem = dynamic(() => import("./PostItem"));
 const Posts = ({ posts }) => {
   const { user, profileuser } = useContext(AppContext);
   return (
