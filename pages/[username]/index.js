@@ -70,6 +70,7 @@ const UsernamePage = ({ userData, posts, id, image }) => {
       <main>
         <UserProfile PAGEuser={userData} admin={isadmin} />
         <Posts posts={posts} />
+        <p style={{padding : "30px"}}>i am lazy to implement the show more posts function, SORRY.</p>
       </main>
     </>
   );
@@ -94,7 +95,7 @@ export async function getServerSideProps(context) {
   const ref = collection(fsDB, "users", userData, "posts");
   const q = query(
     ref,
-    limit(5),
+    limit(7),
     where("published", "==", true),
     orderBy("createdAt", "desc")
   );

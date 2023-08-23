@@ -24,7 +24,6 @@ export default function Home({ posts, image }) {
   const [stateposts, setstateposts] = useState(posts); // Load only the initial number of posts
   const [loading, setloading] = useState(false);
   const [postend, setpostend] = useState(false);
-  console.log(posts);
   async function getMorePosts() {
     setloading(true);
     let newPOSTS = [];
@@ -35,7 +34,7 @@ export default function Home({ posts, image }) {
       orderBy("createdAt", "desc"),
       startAfter(last),
       where("published", "==", true),
-      limit(POSTS_PER_PAGE) // Load more posts per click
+      limit(5) // Load more posts per click
     );
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
@@ -89,14 +88,10 @@ export async function getStaticProps() {
     ref,
     limit(5),
     where("published", "==", true),
-    orderBy("createdAt", "desc"),
+    orderBy("createdAt", "desc")
   );
   const querySnapshot = await getDocs(q);
-  const posts = await Promise.all(
-    querySnapshot.docs.map(async (doc) => {
-      return doc.data();
-    })
-  );
+  const posts = querySnapshot.docs.map((doc) => doc.data());
   const params = "";
   const base = "";
   const url = `${base}${params}`;

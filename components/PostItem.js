@@ -10,7 +10,7 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { fsDB, storage } from "../lib/firebase";
 import { formDate } from "../lib/hooks";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -27,89 +27,71 @@ export default function PostItem({ post, adminId, profileuser }) {
   const [liked, setliked] = useState(false);
   const [likesnum, setlikesnum] = useState(post.heartCound.length || 0);
   const [showmore, setshowmore] = useState(false);
-  const onSelectFile = useCallback(
-    async (e) => {
-      const file = e.target?.files[0];
-      if (!file) return;
-      const storageRef = ref(storage, `files/${file.name}`);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-
-      try {
-        await new Promise((resolve, reject) => {
-          uploadTask.on(
-            "state_changed",
-            (snapshot) => {},
-            (error) => {
-              reject(error);
-            },
-            () => {
-              resolve();
-            }
-          );
-        });
-
-        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-        setImgUrl(downloadURL);
-      } catch (error) {
+  const onSelectFile = (e) => {
+    const file = e.target?.files[0];
+    if (!file) return;
+    const storageRef = ref(storage, `files/${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {},
+      (error) => {
         alert(error);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setImgUrl(downloadURL);
+        });
       }
-    },
-    [setImgUrl]
-  );
+    );
+  };
   async function updatePosts() {
+    // NOTE: check if username if available if not add you must logged in popup
     const docSnap = await getDoc(
       doc(fsDB, "users", post.uid, "posts", post.slug)
     );
-    let liked = false;
     if (docSnap.data()?.heartCound) {
       if (docSnap.data().heartCound.includes(adminId)) {
-        liked = true;
+        setliked(true);
+      }
+    } else {
+      console.log("No such document! (document not liked ?? reomve later)");
+    }
+    //NOTE: this if statement is used to reduce the number of read request to firebase database
+    if (route.query.username === null) return;
+    let mydoc = doc(fsDB, "users", post.uid);
+    let data = await getDoc(mydoc);
+    if (data.exists()) {
+      await updateDoc(doc(fsDB, "users", post.uid, "posts", post.slug), {
+        username: data.data().username,
+        Proimg: data.data().photoURL,
+      }).catch((err) => console.log("no doc to update"));
+    }
+  }
+  async function handleSub() {
+    let mydoc = doc(fsDB, "users", post.uid);
+    let data = await getDoc(mydoc);
+    if (data.exists()) {
+      if (imgUrl === null && input !== "") {
+        await updateDoc(doc(fsDB, "users", post.uid, "posts", post.slug), {
+          content: input,
+        });
+      } else if (input === "" && imgUrl !== null) {
+        await updateDoc(doc(fsDB, "users", post.uid, "posts", post.slug), {
+          img: imgUrl,
+        });
+      } else {
+        await updateDoc(doc(fsDB, "users", post.uid, "posts", post.slug), {
+          content: input,
+          img: imgUrl,
+        });
+      }
+      if (route.query.username) {
+        route.replace(route.asPath);
+      } else {
+        window.location.replace(route.asPath);
       }
     }
-    const mydoc = doc(fsDB, "users", post.uid);
-    const data = await getDoc(mydoc);
-    let username, Proimg;
-    if (data.exists()) {
-      username = data.data().username;
-      Proimg = data.data().photoURL;
-    }
-    return { liked, username, Proimg };
-  }
-
-  async function handleSub() {
-    const mydoc = doc(fsDB, "users", post.uid);
-    const data = await getDoc(mydoc);
-    let username, Proimg;
-    if (data.exists()) {
-      username = data.data().username;
-      Proimg = data.data().photoURL;
-    }
-
-    let contentUpdate = {},
-      imgUpdate = {};
-    if (imgUrl === null && input !== "") {
-      contentUpdate = { content: input };
-    } else if (input === "" && imgUrl !== null) {
-      imgUpdate = { img: imgUrl };
-    } else {
-      contentUpdate = { content: input };
-      imgUpdate = { img: imgUrl };
-    }
-
-    const updatePromises = [
-      updateDoc(doc(fsDB, "users", post.uid, "posts", post.slug), {
-        ...contentUpdate,
-        ...imgUpdate,
-        username,
-        Proimg,
-      }),
-    ];
-    if (route.query.username) {
-      updatePromises.push(route.replace(route.asPath));
-    } else {
-      updatePromises.push(window.location.replace(route.asPath));
-    }
-    await Promise.all(updatePromises);
   }
   function returnShowNumber() {
     if (post.content.length > 250) {
@@ -143,11 +125,10 @@ export default function PostItem({ post, adminId, profileuser }) {
     <div ref={Parent} className="card">
       <div className="expand">
         {/* NOTE: profile img and username and date */}
-        <Link prefetch={false} href={`/${post.username}`}>
+        <Link href={`/${post.username}`}>
           <a className="gap center">
             <Image
               className="profile-pic"
-              loading="lazy"
               width={50}
               height={50}
               src={post.Proimg}
@@ -161,8 +142,7 @@ export default function PostItem({ post, adminId, profileuser }) {
           </a>
         </Link>
         {/* NOTE: edit button  */}
-        {(adminId === post?.uid ||
-          adminId === "73Pd0rih9GWVJ24KFrUpANgkLDg2") && (
+        {adminId === post?.uid && (
           <div ref={editButtonsAnimation} className="expand-btns">
             <strong
               onClick={() => {
@@ -263,7 +243,6 @@ export default function PostItem({ post, adminId, profileuser }) {
       {(imgUrl || post.img) && (
         <div className={"image-container"}>
           <Image
-            loading="lazy"
             src={imgUrl ? imgUrl : post.img}
             layout="fill"
             className={"image"}
@@ -308,7 +287,7 @@ export default function PostItem({ post, adminId, profileuser }) {
           <p>{likesnum} likes</p>
         </span>
         <div className="align-center-row gap">
-          <Image src={"/share.png"} height={20} width={20} loading="lazy" />
+          <Image src={"/share.png"} height={20} width={20} />
           <p>Share</p>
         </div>
       </div>
