@@ -100,11 +100,7 @@ export async function getServerSideProps(context) {
   );
   const querySnapshot = await getDocs(q);
 
-  const postsDATA = await Promise.all(
-    querySnapshot.docs.map(async (doc) => {
-      return doc.data();
-    })
-  );
+  const postsDATA = querySnapshot.docs.map((doc) => doc.data());
 
   const params = context.resolvedUrl;
   const base = return_url(context);
@@ -112,7 +108,6 @@ export async function getServerSideProps(context) {
   const image = await fetch(
     `https://api.savepage.io/v1/?key=96d39481fc5e144daf42d4b3d03fccee&q=${url}`
   ).then((res) => res.url);
-
   return {
     props: {
       image: image,

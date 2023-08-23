@@ -10,7 +10,6 @@ import {
 } from "firebase/firestore";
 import { fsDB } from "../lib/firebase";
 import { useState } from "react";
-import { return_url } from "../lib/hooks";
 const Posts = dynamic(() => import("../components/Posts"), {
   loading: () => <div>...loading</div>,
 });
@@ -22,11 +21,10 @@ import Head from "next/head";
 const POSTS_PER_PAGE = 5; // Limit the initial number of posts to be loaded
 
 export default function Home({ posts, image }) {
-  
-  const [stateposts, setstateposts] = useState(posts.slice(0, POSTS_PER_PAGE)); // Load only the initial number of posts
+  const [stateposts, setstateposts] = useState(posts); // Load only the initial number of posts
   const [loading, setloading] = useState(false);
   const [postend, setpostend] = useState(false);
-  console.log(posts); 
+  console.log(posts);
   async function getMorePosts() {
     setloading(true);
     let newPOSTS = [];
@@ -86,7 +84,6 @@ export default function Home({ posts, image }) {
 }
 
 export async function getStaticProps() {
-  let posts = [];
   const ref = collectionGroup(fsDB, "posts");
   const q = query(
     ref,
@@ -95,9 +92,11 @@ export async function getStaticProps() {
     limit(POSTS_PER_PAGE)
   );
   const querySnapshot = await getDocs(q);
-  querySnapshot.forEach((doc) => {
-    posts.push(doc.data());
-  });
+  const posts = await Promise.all(
+    querySnapshot.docs.map(async (doc) => {
+      return doc.data();
+    })
+  );
   const params = "";
   const base = "";
   const url = `${base}${params}`;
