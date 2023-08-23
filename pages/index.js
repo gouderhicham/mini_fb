@@ -87,9 +87,9 @@ export async function getStaticProps() {
   const ref = collectionGroup(fsDB, "posts");
   const q = query(
     ref,
-    orderBy("createdAt", "desc"),
+    limit(5),
     where("published", "==", true),
-    limit(POSTS_PER_PAGE)
+    orderBy("createdAt", "desc"),
   );
   const querySnapshot = await getDocs(q);
   const posts = await Promise.all(
