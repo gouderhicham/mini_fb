@@ -22,10 +22,11 @@ import Head from "next/head";
 const POSTS_PER_PAGE = 5; // Limit the initial number of posts to be loaded
 
 export default function Home({ posts, image }) {
+  
   const [stateposts, setstateposts] = useState(posts.slice(0, POSTS_PER_PAGE)); // Load only the initial number of posts
   const [loading, setloading] = useState(false);
   const [postend, setpostend] = useState(false);
-
+  console.log(posts); 
   async function getMorePosts() {
     setloading(true);
     let newPOSTS = [];
