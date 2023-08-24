@@ -104,5 +104,6 @@ export async function getStaticProps() {
       image,
       posts,
     },
+    revalidate: 60,
   };
 }
